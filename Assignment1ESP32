@@ -1,0 +1,67 @@
+//Initialising Variables for pins connected to LED
+const int led_1 = 15;
+const int led_2 = 21;
+//Initialising Variables for pins connected to Switch
+const int switch_1 = 22;
+const int switch_2 = 23;
+
+ void setup() {
+ //Initialising Pins for Input and Output
+   Serial.begin(9600);
+   pinMode(15, OUTPUT);
+   pinMode(21, OUTPUT);
+   pinMode(22, INPUT);
+   pinMode(23, INPUT);
+ }
+ 
+ //creating a Module to generate Signal B for creating pulses to Trigger the Oscilloscope
+ //The Module has 3 variables, Pin Selection, Length of Delay and Duration of On 
+ void sig_b(int ppin, int len, int b){
+   digitalWrite(ppin, HIGH);
+   delay(b);
+   digitalWrite (ppin, LOW);
+   delay(len);
+ }
+
+//creating a Module to generate Signal A for creating pulses
+//Values are derived by the First 5 letters of the Surname
+ //The Module has 6 variables, Pin Selection, Length of Pulse, Length of Increment, Length of Dead Pulse, Number of Pulses and Duration of Dead Pulse 
+ void sig_a(int pin, int pul_dur_a, int time_step, int pause_b,int num_pul, int d) {
+   for(int i = 0; i < num_pul; i ++) {
+      digitalWrite(pin, HIGH);
+     delay(pul_dur_a);
+     //Incrementing the pul by the time step for the required number of pulses
+     pul_dur_a = pul_dur_a+time_step;
+     digitalWrite(pin, LOW);
+     delay(pause_b);
+   }
+  digitalWrite(pin, LOW);
+  delay (d);
+ }
+
+ //Using the Loop Mechanism to repeat the stream of pulses indefinitiely
+ void loop() 
+ {
+ //Using Switch 1 set to OFF to stop the stream of pulses
+   if (digitalRead(switch_1)==HIGH)
+   {
+     digitalWrite(led_1, LOW);
+     digitalWrite(led_2, LOW);
+   }
+    //Using Switch 1 set to ON to trigger the stream of pulses
+   else if (digitalRead(switch_1) == LOW)
+    {
+     //Using Switch 2 set to ON to trigger the Second Mode
+    if (digitalRead(switch_2) == HIGH)
+    {
+    sig_a(led_1, 800, 50, 100, 15, 4000);
+    sig_b(led_2, 18900, 50);
+    }
+    //Using If-Else Statement to trigger the First Mode
+    else
+    {
+    sig_a(led_1, 800, 50, 100, 12, 4000);
+    sig_b(led_2, 19550, 50);
+    }
+    }
+ }
